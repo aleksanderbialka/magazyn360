@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "magazyn360-api"
+version = "0.1.0"
+description = ""
+authors = ["aleksanderbialka <aleksander.bialka@icloud.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.13"
+django = "^5.2"
+djangorestframework = "^3.16.0"
+djangorestframework-simplejwt = "^5.5.0"
+psycopg2-binary = "^2.9.10"
+django-environ = "^0.12.0"
+django-cors-headers = "^4.7.0"
+drf-yasg = "^1.21.10"
+sentry-sdk = "^2.25.1"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.11.5"
+black = "^25.1.0"
+pre-commit = "^4.2.0"
+
+
+[tool.poetry.group.pytest.dependencies]
+pytest-django = "^4.11.1"
+pytest-asyncio = "^0.26.0"
+coverage = "^7.8.0"
+pytest-cov = "^6.1.1"
+pytest-mock = "^3.14.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+################ formatters ################
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+exclude = '''
+/(
+    migrations
+    \.venv
+    \.tox
+    \.git
+)/
+'''
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+select = ["E", "F", "B", "I", "DJ"]
+ignore = ["E501"]
+exclude = ["migrations", "static", "media"]
