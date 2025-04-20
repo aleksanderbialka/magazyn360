@@ -13,7 +13,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --force-
 
 WORKDIR /usr/src/magazyn360-api
 
-RUN pip install poetry
+RUN pip install poetry==1.8.5
 
 COPY pyproject.toml poetry.lock* ./
 
