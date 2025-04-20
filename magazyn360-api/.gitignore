@@ -93,3 +93,6 @@ celerybeat.pid
 # Virtual environments
 .venv/
 env/
+
+# Local environment variables
+.env

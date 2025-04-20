@@ -1,0 +1,42 @@
+version: "3.8"
+
+networks:
+  magazyn360-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+    name: magazyn360-pgdata
+
+services:
+  magazyn360:
+    image: magazyn360:latest
+    container_name: magazyn360
+    restart: always
+    networks:
+      - magazyn360-net
+    volumes:
+      - ./magazyn360-api:/usr/src/magazyn360-api
+    env_file:
+      - ./magazyn360-api/.env
+    ports:
+      - "8000:8000"
+    expose:
+      - "8000"
+    depends_on:
+    - magazyn360-postgres
+
+
+
+  magazyn360-postgres:
+    image: postgres:latest
+    container_name: magazyn360-postgres
+    restart: always
+    networks:
+      - magazyn360-net
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    env_file:
+      - ./magazyn360-api/.env
+    ports:
+      - "5432:5432"
