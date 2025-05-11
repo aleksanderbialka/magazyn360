@@ -43,11 +43,17 @@ class CustomUser(AbstractUser, TimeStampedModel):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(_("Email address"), unique=True)
     phone_number = models.CharField(
-        max_length=20, blank=True, validators=[validators.PolishPhoneNumberValidator()]
+        _("Phone Number"),
+        max_length=20,
+        blank=True,
+        help_text=_("Optional Polish phone number"),
+        validators=[validators.PolishPhoneNumberValidator()],
     )
     role = models.CharField(
+        _("Role"),
+        help_text=_("User role in the system"),
         choices=Role.choices,
         default=Role.VIEWER,
     )
@@ -55,11 +61,14 @@ class CustomUser(AbstractUser, TimeStampedModel):
         "core.Company",
         on_delete=models.PROTECT,
         related_name="users",
+        help_text=_("Associated company"),
         null=True,
         blank=True,
     )
-    position = models.CharField(max_length=50, blank=True)
-    department = models.CharField(max_length=50, blank=True)
+    position = models.CharField(
+        _("Position"), max_length=50, blank=True, help_text=_("Job position")
+    )
+    department = models.CharField(_("Department"), max_length=50, blank=True)
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
@@ -99,31 +108,38 @@ class Company(TimeStampedModel):
     name = models.CharField(_("Company Name"), max_length=255)
     tax_id = models.CharField(
         _("Tax ID (NIP)"),
+        help_text=_("Tax Identification Number 10 digits"),
         max_length=20,
         validators=[validators.NIPValidator()],
     )
     statistical_number = models.CharField(
         _("Statistical Number (REGON)"),
+        help_text=_("Statistical Number 9 or 14 digits"),
         max_length=20,
         validators=[validators.REGONValidator()],
     )
     national_court_register = models.CharField(
         _("National Court Register (KRS)"),
+        help_text=_("National Court Register 10 digits"),
         max_length=20,
         validators=[validators.KRSValidator()],
     )
-    email = models.EmailField(_("Email"))
+    email = models.EmailField(_("Email"), help_text=_("Company email"), unique=True)
     phone = models.CharField(
         _("Phone Number"),
+        help_text=_("Company phone number"),
         max_length=20,
         validators=[validators.PolishPhoneNumberValidator()],
     )
-    website = models.URLField(_("Website"), blank=True, default="")
+    website = models.URLField(
+        _("Website"), help_text=_("Company website"), blank=True, default=""
+    )
     owner = models.ForeignKey(
         "core.CustomUser",
         on_delete=models.PROTECT,
         related_name="owned_companies",
         verbose_name=_("Owner"),
+        help_text=_("Company owner"),
     )
 
     class Meta:
@@ -177,6 +193,7 @@ class Address(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(
         _("Address Type"),
+        help_text=_("Type of address (billing, shipping, etc.)"),
         max_length=50,
         choices=AddressTypes.choices,
         default=AddressTypes.BILLING,
@@ -187,7 +204,9 @@ class Address(TimeStampedModel):
         related_name="addresses",
         verbose_name=_("Company"),
     )
-    name = models.CharField(_("Address Name"), max_length=255)
+    name = models.CharField(
+        _("Address Name"), help_text=_("Identifier for the address"), max_length=255
+    )
     street = models.CharField(_("Street"), max_length=255)
     city = models.CharField(_("City"), max_length=100)
     postal_code = models.CharField(_("Postal Code"), max_length=20)
