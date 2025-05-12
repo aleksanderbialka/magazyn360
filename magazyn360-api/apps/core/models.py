@@ -1,7 +1,7 @@
 import logging
 import uuid
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -83,6 +83,25 @@ class CustomUser(AbstractUser, TimeStampedModel):
 
     def __str__(self):
         return f"{self.email} ({Role(self.role).name.lower()})"
+
+    def sync_group_with_role(self):
+        """Synchronize user group with role.
+        This method assigns the user to a group based on their role.
+        """
+        role_to_group = {
+            Role.ADMIN: "Admin",
+            Role.MANAGER: "Manager",
+            Role.WORKER: "Worker",
+            Role.VIEWER: "Viewer",
+            Role.OWNER: "Owner",
+        }
+
+        group_name = role_to_group.get(Role(self.role))
+        if not group_name:
+            return
+
+        group, _ = Group.objects.get_or_create(name=group_name)
+        self.groups.set([group])
 
     @property
     def company_name(self):
