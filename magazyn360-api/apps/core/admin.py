@@ -27,6 +27,8 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ("role", "company", "is_active", "is_staff")
     search_fields = ("email", "first_name", "last_name", "phone_number", "position")
     ordering = ("email",)
+    autocomplete_fields = ["company"]
+    readonly_fields = ("last_login", "date_joined")
 
     fieldsets = (
         (_("Authentication"), {"fields": ("username", "email", "password")}),
@@ -54,13 +56,18 @@ class CustomUserAdmin(UserAdmin):
             {
                 "classes": ("wide",),
                 "fields": (
+                    "username",
                     "email",
                     "password1",
                     "password2",
+                    "first_name",
+                    "last_name",
+                    "phone_number",
                     "role",
                     "company",
                     "position",
                     "is_active",
+                    "is_staff",
                 ),
             },
         ),
@@ -82,6 +89,9 @@ class CompanyAdmin(admin.ModelAdmin):
     list_filter = ("addresses__city", "addresses__country")
     search_fields = ("name", "tax_id", "email", "owner__email", "addresses__city")
     ordering = ("name",)
+    autocomplete_fields = ["owner"]
+    readonly_fields = ("created_at", "updated_at")
+
     fieldsets = (
         (_("General"), {"fields": ("name", "email", "phone", "website")}),
         (
@@ -92,6 +102,10 @@ class CompanyAdmin(admin.ModelAdmin):
             },
         ),
         (_("Ownership"), {"fields": ("owner",), "classes": ("collapse",)}),
+        (
+            _("Important dates"),
+            {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
+        ),
     )
 
     def primary_address_city(self, obj):
@@ -111,7 +125,14 @@ class AddressAdmin(admin.ModelAdmin):
     list_filter = ("type", "city", "country", "company")
     search_fields = ("name", "company__name", "street", "city", "postal_code")
     ordering = ("company", "type")
+    autocomplete_fields = ["company"]
+    readonly_fields = ("created_at", "updated_at")
+
     fieldsets = (
         (_("General"), {"fields": ("name", "type", "company")}),
         (_("Address"), {"fields": ("street", "city", "postal_code", "country")}),
+        (
+            _("Important dates"),
+            {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
+        ),
     )
