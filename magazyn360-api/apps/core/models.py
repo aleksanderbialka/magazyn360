@@ -182,7 +182,7 @@ class Company(TimeStampedModel):
 
     @property
     def primary_address(self) -> "Address":
-        """Returns the primary billing address."""
+        """Returns the primary office address."""
         return self.addresses.filter(type=AddressTypes.OFFICE).first()
 
     @property
