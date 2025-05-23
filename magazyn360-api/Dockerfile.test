@@ -14,4 +14,4 @@ RUN poetry install --with dev,pytest
 
 COPY . .
 
-CMD ["sh", "-c", "poetry run ruff . && poetry run black --check . && poetry run pytest --ds=magazyn360.settings"]
+CMD ["sh", "-c", "poetry run ruff check . && poetry run black --check . && poetry run pytest --ds=magazyn360.settings"]
