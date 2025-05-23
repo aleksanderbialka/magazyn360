@@ -1,0 +1,17 @@
+FROM python:3.13-slim-bullseye
+
+RUN apt-get update && apt-get install -y \
+    build-essential libpq-dev gcc g++ libffi-dev \
+    libssl-dev git curl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/src/app
+
+RUN pip install poetry==1.8.5
+
+COPY pyproject.toml poetry.lock* ./
+RUN poetry install
+
+COPY . .
+
+CMD poetry run ruff . && poetry run black --check . && poetry run pytest --ds=magazyn360.settings
