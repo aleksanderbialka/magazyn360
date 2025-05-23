@@ -39,9 +39,9 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = magazyn360.settings
-python_files = tests.py test_*.py *_tests.py
-addopts = --cov=apps --cov-report=html --cov-report=term-missing
+DJANGO_SETTINGS_MODULE = "magazyn360.settings"
+python_files = "tests.py test_*.py *_tests.py"
+addopts = "--cov=apps --cov-report=html --cov-report=term-missing"
 
 ################ formatters ################
 
