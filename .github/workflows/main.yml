@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: magazyn360-api
-        run: poetry install --only main
+        run: poetry install --with dev
 
       - name: Run Ruff
         working-directory: magazyn360-api

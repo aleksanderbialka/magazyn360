@@ -10,8 +10,8 @@ WORKDIR /usr/src/app
 RUN pip install poetry==1.8.5
 
 COPY pyproject.toml poetry.lock* ./
-RUN poetry install --with dev
+RUN poetry install --with dev,pytest
 
 COPY . .
 
-CMD poetry run ruff . && poetry run black --check . && poetry run pytest --ds=magazyn360.settings
+CMD ["sh", "-c", "poetry run ruff . && poetry run black --check . && poetry run pytest --ds=magazyn360.settings"]
