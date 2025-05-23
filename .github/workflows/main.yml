@@ -27,7 +27,7 @@ jobs:
 
       - name: Run Ruff
         working-directory: magazyn360-api
-        run: poetry run ruff .
+        run: poetry run ruff check .
 
       - name: Run Black (check only)
         working-directory: magazyn360-api
