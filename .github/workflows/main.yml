@@ -1,0 +1,44 @@
+name: Magazyn360 CI/CD -- MAIN workflow 🦁
+run-name: ${{ github.event.head_commit.message }} -- ${{ github.actor}} 🦁
+
+on:
+  push:
+    branches: ["actions"]
+
+  workflow_dispatch:
+    inputs:
+      build:
+        description: "Zbudować obraz Dockera?"
+        required: true
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+      deploy:
+        description: "Wykonać deployment do AKS?"
+        required: true
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+      operation:
+        description: "Wybierz typ operacji"
+        required: true
+        default: "reinstall"
+        type: choice
+        options: ["install", "uninstall", "reinstall"]
+
+jobs:
+  test:
+    name: Run Tests and Lint inside Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test image
+        run: docker build -t magazyn360-test -f ./magazyn360-api/Dockerfile.test ./magazyn360-api
+
+      - name: Run tests in container
+        run: docker run --rm magazyn360-test
