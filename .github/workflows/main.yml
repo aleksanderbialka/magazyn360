@@ -60,7 +60,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name:  Build Docker image for tests
-        run: docker build -t magazyn360 -f ./magazyn360-api/Dockerfile ./magazyn360-api
+        run: docker build -t magazyn360 -f ./magazyn360-api/Dockerfile.test ./magazyn360-api
 
       - name: Launch Docker container
         run: |
