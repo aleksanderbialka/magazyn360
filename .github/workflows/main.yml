@@ -73,8 +73,5 @@ jobs:
             -e POSTGRES_HOST=host.docker.internal \
             -e POSTGRES_PORT=5432 \
             -v ${{ github.workspace }}/coverage:/usr/src/app/coverage \
-            magazyn360
-
-      - name: Run tests
-        run: |
-            docker exec magazyn360 /bin/bash -c "source /var/www/magazyn360/app/magazyn360-api/bin/run_tests.sh"
+            magazyn360 \
+            /var/www/magazyn360/app/magazyn360-api/bin/run_tests.sh

@@ -96,3 +96,6 @@ env/
 
 # Local environment variables
 .env
+
+# Static files
+staticfiles/
