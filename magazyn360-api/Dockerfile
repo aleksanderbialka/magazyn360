@@ -36,7 +36,7 @@ COPY ./README.md /var/www/magazyn360/app/magazyn360-api/
 COPY ./manage.py /var/www/magazyn360/app/magazyn360-api/
 COPY ./magazyn360 /var/www/magazyn360/app/magazyn360-api/magazyn360/
 COPY ./apps /var/www/magazyn360/app/magazyn360-api/apps/
-COPY ./docs /var/www/magazyn360/app/magazyn360-api/docs/
+COPY ./bin /var/www/magazyn360/app/magazyn360-api/bin/
 RUN ls -la /var/www/magazyn360/app/magazyn360-api/*
 
 WORKDIR /var/www/magazyn360/app/magazyn360-api/
