@@ -62,7 +62,7 @@ jobs:
       - name:  Build Docker image for tests
         run: docker build -t magazyn360 -f ./magazyn360-api/Dockerfile.test ./magazyn360-api
 
-      - name: Launch Docker container
+      - name: Launch Docker container and run tests
         run: |
           docker run --rm \
             -e SECRET_KEY=testsecret \
@@ -74,12 +74,3 @@ jobs:
             -e POSTGRES_PORT=5432 \
             -v ${{ github.workspace }}/coverage:/usr/src/app/coverage \
             magazyn360
-
-      - name: Check if container is running
-        run: |
-          docker ps
-
-      - name: Run tests with coverage
-        run: |
-          docker exec magazyn360 /bin/bash -c "source /var/www/magazyn360/app/magazyn360_env/bin/activate && \
-          /var/www/magazyn360/app/magazyn360_api/bin/run_tests.sh"
