@@ -99,3 +99,6 @@ env/
 
 # Static files
 staticfiles/
+
+#Gunicorn
+gunicorn.pid
