@@ -59,8 +59,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name:  Build Docker image for tests
-        run: docker build -t magazyn360 -f ./magazyn360-api/Dockerfile.test ./magazyn360-api
+      - name:  Build Docker image
+        run: docker build -t magazyn360 -f ./magazyn360-api/Dockerfile ./magazyn360-api
 
       - name: Launch Docker container and run tests
         run: |
@@ -74,3 +74,7 @@ jobs:
             -e POSTGRES_PORT=5432 \
             -v ${{ github.workspace }}/coverage:/usr/src/app/coverage \
             magazyn360
+
+      - name: Run tests
+        run: |
+            docker exec magazyn360 /bin/bash -c "source /var/www/magazyn360/app/magazyn360-api/bin/run_tests.sh"

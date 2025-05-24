@@ -27,6 +27,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --force-
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/* /var/tmp/*
 
+COPY ./docs/supervisord/*.conf /etc/supervisor/conf.d/
+
 RUN mkdir -p /var/www/magazyn360/app/magazyn360-api/
 RUN python3 -m venv /var/www/magazyn360/app/magazyn360_env/
 
@@ -37,6 +39,7 @@ COPY ./manage.py /var/www/magazyn360/app/magazyn360-api/
 COPY ./magazyn360 /var/www/magazyn360/app/magazyn360-api/magazyn360/
 COPY ./apps /var/www/magazyn360/app/magazyn360-api/apps/
 COPY ./bin /var/www/magazyn360/app/magazyn360-api/bin/
+RUN chmod +x /var/www/magazyn360/app/magazyn360-api/bin/*.sh
 RUN ls -la /var/www/magazyn360/app/magazyn360-api/*
 
 WORKDIR /var/www/magazyn360/app/magazyn360-api/
@@ -48,6 +51,5 @@ RUN source /var/www/magazyn360/app/magazyn360_env/bin/activate \
     && poetry config virtualenvs.create false \
     && cd /var/www/magazyn360/app/magazyn360-api/ \
     && poetry install
-RUN source /var/www/magazyn360/app/magazyn360_env/bin/activate && python manage.py collectstatic --noinput
 
-CMD ["/var/www/magazyn360/app/magazyn360_env/bin/gunicorn", "magazyn360.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]

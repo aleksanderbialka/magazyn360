@@ -37,6 +37,7 @@ COPY ./manage.py /var/www/magazyn360/app/magazyn360-api/
 COPY ./magazyn360 /var/www/magazyn360/app/magazyn360-api/magazyn360/
 COPY ./apps /var/www/magazyn360/app/magazyn360-api/apps/
 COPY ./bin /var/www/magazyn360/app/magazyn360-api/bin/
+RUN chmod +x /var/www/magazyn360/app/magazyn360-api/bin/magazyn360_start_guvicorn.sh
 RUN chmod +x /var/www/magazyn360/app/magazyn360-api/bin/run_tests.sh
 RUN ls -la /var/www/magazyn360/app/magazyn360-api/*
 
