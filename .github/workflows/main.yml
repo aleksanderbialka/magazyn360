@@ -21,9 +21,9 @@ jobs:
       - name: Install Poetry
         run: pip install poetry==1.8.5
 
-      - name: Install dependencies
+      - name: Install dependencies for linting
         working-directory: magazyn360-api
-        run: poetry install --with dev
+        run: poetry install --only dev
 
       - name: Run Ruff
         working-directory: magazyn360-api

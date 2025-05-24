@@ -62,6 +62,6 @@ exclude = '''
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-select = ["E", "F", "B", "I", "DJ"]
-ignore = ["E501"]
+lint.select = ["E", "F", "B", "I", "DJ"]
+lint.gnore = ["E501"]
 exclude = ["migrations", "static", "media"]
