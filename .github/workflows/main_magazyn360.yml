@@ -59,15 +59,37 @@ jobs:
       - name: Set up Docker Buildx 🛠️
         uses: docker/setup-buildx-action@v3
 
+      - name: Create Docker network
+        run: docker network create gha-network
+
+      - name: Start Postgres
+        run: |
+          docker run -d \
+            --name postgres \
+            --network gha-network \
+            -e POSTGRES_DB=postgres \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=password \
+            -p 5432:5432 \
+            postgres:15
+
+      - name: Wait for Postgres
+        run: |
+          for i in {1..30}; do
+            docker exec postgres pg_isready -U postgres && break
+            sleep 1
+          done
+
       - name:  Build Docker image 🐳
         run: docker build -t magazyn360 -f ./magazyn360-api/Dockerfile ./magazyn360-api
 
       - name: Launch Docker container and run tests 🧪
         run: |
           docker run --rm \
+            --network gha-network \
             -e SECRET_KEY=testsecret \
             -e DEBUG=False \
-            -e POSTGRES_DB=magazyn360 \
+            -e POSTGRES_DB=postgres \
             -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=password \
             -e POSTGRES_HOST=postgres \
