@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+
+# Pytest / Ruff / Coverage
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# IDEs
+.vscode/
+.idea/
+
+# Env files
+.env
+.env.*
+
+# Staticfiles
+staticfiles/
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db

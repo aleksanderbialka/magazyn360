@@ -96,3 +96,13 @@ env/
 
 # Local environment variables
 .env
+
+# Static & media files
+staticfiles/
+media/
+
+# Log files
+*.log
+
+# Gunicorn PID file
+gunicorn.pid
