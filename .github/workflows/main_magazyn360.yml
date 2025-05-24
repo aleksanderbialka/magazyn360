@@ -70,7 +70,7 @@ jobs:
             -e POSTGRES_DB=magazyn360 \
             -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=password \
-            -e POSTGRES_HOST=localhost \
+            -e POSTGRES_HOST=postgres \
             -e POSTGRES_PORT=5432 \
             -v ${{ github.workspace }}/coverage:/usr/src/app/coverage \
             magazyn360 \
