@@ -52,4 +52,6 @@ RUN source /var/www/magazyn360/app/magazyn360_env/bin/activate \
     && cd /var/www/magazyn360/app/magazyn360-api/ \
     && poetry install
 
+CMD ["/var/www/magazyn360/app/magazyn360_env/bin/gunicorn", "magazyn360.wsgi:application", "--bind", "0.0.0.0:8000"]
+
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
