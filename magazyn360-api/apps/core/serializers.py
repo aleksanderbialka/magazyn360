@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.core.models import CustomUser
+from apps.core.models import Company, CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,3 +22,20 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_company_name(self, obj):
         return obj.company.name if obj.company else None
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = [
+            "id",
+            "name",
+            "tax_id",
+            "statistical_number",
+            "national_court_register",
+            "email",
+            "phone",
+            "website",
+            "owner",
+        ]
+        read_only_fields = ["id", "owner"]

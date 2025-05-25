@@ -134,6 +134,24 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": env.bool("JWT_BLACKLIST_AFTER_ROTATION", default=True),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+# Swagger and API documentation
+INSTALLED_APPS += [
+    "drf_yasg",
+]
+
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer <your_token_here>'",
+        }
+    },
+    "USE_SESSION_AUTH": False,
+}
+
 # Internationalization
 
 LANGUAGE_CODE = "en-us"
