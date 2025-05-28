@@ -108,7 +108,7 @@ jobs:
             -e POSTGRES_PORT=5432 \
             -v ${{ github.workspace }}/results:/var/www/magazyn360/app/magazyn360-api/results \
             -v ${{ github.workspace }}/htmlcov:/var/www/magazyn360/app/magazyn360-api/htmlcov \
-            $IMAGE_NAME:IMAGE_TAG \
+            $IMAGE_NAME:$IMAGE_TAG \
             /var/www/magazyn360/app/magazyn360-api/bin/run_tests.sh
 
       - name: Publish test report in GitHub UI
