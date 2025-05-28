@@ -92,6 +92,3 @@ class TestUserSerializer:
             assert user.check_password(user_validated_data["password"])
             assert user.pk is not None
             assert mock_sync.called
-
-    def test_fail(self):
-        assert False  # noqa: B011
