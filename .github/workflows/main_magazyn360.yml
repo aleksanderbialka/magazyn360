@@ -2,12 +2,28 @@ name: Magazyn360 CI/CD -- MAIN workflow 🦁
 run-name: ${{ github.event.head_commit.message }} -- ${{ github.actor}} 🦁
 
 on:
+  workflow_dispatch:
+    inputs:
+      build_image:
+        description: "Build image?"
+        required: true
+        default: "true"
+      operation:
+        description: "Choose operation (Install/Uninstall/Reinstall)"
+        required: true
+        default: "Reinstall"
+        type: choice
+        options:
+          - Install
+          - Uninstall
+          - Reinstall
   push:
     branches: ["master", "dev", "cicd"]
 
 permissions:
   checks: write
   contents: read
+  packages: write
 
 jobs:
   lint:
@@ -37,12 +53,17 @@ jobs:
         working-directory: magazyn360-api
         run: poetry run black --check .
 
-  tests:
+  build-and-tests:
     name: Run Tests in Docker with Postgres 🐳
     runs-on: ubuntu-latest
     needs: lint
 
     steps:
+
+      - name: Set Tag to Docker Image 📦
+        run: |
+          echo "IMAGE_TAG=${{ vars.IMAGE_NAME }}:${{ github.ref_name }}:${{ github.ref_name }}" >> $GITHUB_ENV"
+
       - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx 🛠️
@@ -70,7 +91,7 @@ jobs:
           done
 
       - name:  Build Docker image 🐳
-        run: docker build -t magazyn360 -f ./magazyn360-api/Dockerfile ./magazyn360-api
+        run: docker build -t $IMAGE_TAG -f ./magazyn360-api/Dockerfile ./magazyn360-api
 
       - name: Launch Docker container and run tests 🧪
         run: |
@@ -109,3 +130,21 @@ jobs:
         with:
           name: pytest-html-report
           path: results/pytest-report.html
+
+  push-image:
+      name: Push Docker image to JFrog 🐸
+      runs-on: ubuntu-latest
+      needs: build-and-tests
+      if: github.event.inputs.build_image != 'false'
+      steps:
+        - name: Login to JFrog
+          uses: docker/login-action@v2
+          with:
+            registry: ${{ secrets.JFROG_REGISTRY }}
+            username: ${{ secrets.JFROG_USERNAME }}
+            password: ${{ secrets.JFROG_PASSWORD }}
+
+        - name: Tag and push image to JFrog
+          run: |
+            docker tag $IMAGE_TAG ${{ secrets.JFROG_REGISTRY }}/${{ secrets.JFROG_REPO }}/$IMAGE_TAG
+            docker push ${{ secrets.JFROG_REGISTRY }}/${{ secrets.JFROG_REPO }}/$IMAGE_TAG
