@@ -79,12 +79,14 @@ jobs:
             -e POSTGRES_PASSWORD=password \
             -e POSTGRES_HOST=postgres \
             -e POSTGRES_PORT=5432 \
-            -v ${{ github.workspace }}/coverage:/var/www/magazyn360/app/magazyn360-api/coverage \
+            -v ${{ github.workspace }}/magazyn360-api:/var/www/magazyn360/app/magazyn360-api \
             magazyn360 \
             /var/www/magazyn360/app/magazyn360-api/bin/run_tests.sh
 
-      - name: Upload coverage report 📊
-        uses: actions/upload-artifact@v4
+      - name: Publish test report in GitHub UI
+        uses: dorny/test-reporter@v1
+        if: always()
         with:
-            name: coverage-report
-            path: coverage/
+              name: Pytest Test Results
+              path: magazyn360-api/pytest-results.xml
+              reporter: junit
