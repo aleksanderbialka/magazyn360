@@ -84,6 +84,7 @@ jobs:
             -e POSTGRES_HOST=postgres \
             -e POSTGRES_PORT=5432 \
             -v ${{ github.workspace }}/results:/var/www/magazyn360/app/magazyn360-api/results \
+            -v ${{ github.workspace }}/htmlcov:/var/www/magazyn360/app/magazyn360-api/htmlcov \
             magazyn360 \
             /var/www/magazyn360/app/magazyn360-api/bin/run_tests.sh
 
@@ -94,3 +95,10 @@ jobs:
               name: Pytest Test Results
               path: results/pytest-results.xml
               reporter: java-junit
+
+      - name: Upload Coverage HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-report
+          path: htmlcov
