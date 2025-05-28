@@ -93,7 +93,7 @@ jobs:
           done
 
       - name:  Build Docker image 🐳
-        run: docker build -t $IMAGE_TAG -f ./magazyn360-api/Dockerfile ./magazyn360-api
+        run: docker build -t $IMAGE_NAME:$IMAGE_TAG -f ./magazyn360-api/Dockerfile ./magazyn360-api
 
       - name: Launch Docker container and run tests 🧪
         run: |
@@ -108,7 +108,7 @@ jobs:
             -e POSTGRES_PORT=5432 \
             -v ${{ github.workspace }}/results:/var/www/magazyn360/app/magazyn360-api/results \
             -v ${{ github.workspace }}/htmlcov:/var/www/magazyn360/app/magazyn360-api/htmlcov \
-            $IMAGE_TAG \
+            $IMAGE_NAME:IMAGE_TAG \
             /var/www/magazyn360/app/magazyn360-api/bin/run_tests.sh
 
       - name: Publish test report in GitHub UI
@@ -145,7 +145,7 @@ jobs:
             registry: ${{ secrets.JFROG_REGISTRY }}
             username: ${{ secrets.JFROG_USERNAME }}
             password: ${{ secrets.JFROG_PASSWORD }}
-            
+
         - name: Set Tag to Docker Image 📦
           run: |
             echo "IMAGE_NAME=${{ vars.IMAGE_NAME }}" >> $GITHUB_ENV
