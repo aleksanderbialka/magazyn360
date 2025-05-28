@@ -917,6 +917,20 @@ docs = ["sphinx", "sphinx_rtd_theme"]
 testing = ["Django", "django-configurations (>=2.0)"]
 
 [[package]]
+name = "pytest-github-actions-annotate-failures"
+version = "0.3.0"
+description = "pytest plugin to annotate failed tests with a workflow command for GitHub Actions"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pytest_github_actions_annotate_failures-0.3.0-py3-none-any.whl", hash = "sha256:41ea558ba10c332c0bfc053daeee0c85187507b2034e990f21e4f7e5fef044cf"},
+    {file = "pytest_github_actions_annotate_failures-0.3.0.tar.gz", hash = "sha256:d4c3177c98046c3900a7f8ddebb22ea54b9f6822201b5d3ab8fcdea51e010db7"},
+]
+
+[package.dependencies]
+pytest = ">=6.0.0"
+
+[[package]]
 name = "pytest-mock"
 version = "3.14.0"
 description = "Thin-wrapper around the mock package for easier use with pytest"
@@ -1411,4 +1425,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.13"
-content-hash = "ba120bd28f11005339b1b0a2040c83609875fe52bbce8ae4bbbc33441d0f67c1"
+content-hash = "8274ac91a09bfe58b3507ba5fe3febe23e3849415db130fb27d1fc5296170aad"
