@@ -79,7 +79,7 @@ jobs:
             -e POSTGRES_PASSWORD=password \
             -e POSTGRES_HOST=postgres \
             -e POSTGRES_PORT=5432 \
-            -v ${{ github.workspace }}/magazyn360-api:/var/www/magazyn360/app/magazyn360-api \
+            -v ${{ github.workspace }}/results:/var/www/magazyn360/app/magazyn360-api/results \
             magazyn360 \
             /var/www/magazyn360/app/magazyn360-api/bin/run_tests.sh
 
@@ -88,5 +88,5 @@ jobs:
         if: always()
         with:
               name: Pytest Test Results
-              path: magazyn360-api/pytest-results.xml
-              reporter: java-junit
+              path: results/pytest-results.xml
+              reporter: junit
