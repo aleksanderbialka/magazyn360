@@ -89,4 +89,4 @@ jobs:
         with:
               name: Pytest Test Results
               path: results/pytest-results.xml
-              reporter: junit
+              reporter: java-junit
