@@ -5,6 +5,10 @@ on:
   push:
     branches: ["master", "dev", "cicd"]
 
+permissions:
+  checks: write
+  contents: read
+
 jobs:
   lint:
     name: Lint with Ruff and Black
