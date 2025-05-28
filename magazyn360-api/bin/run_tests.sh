@@ -6,4 +6,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR/.."
 
 source /var/www/magazyn360/app/magazyn360_env/bin/activate
-pytest --cov=magazyn360_api --cov-report=term-missing .
+pytest --cov=magazyn360_api --cov-report=term-missing --cov-report=xml:/var/www/magazyn360/app/magazyn360-api/coverage/coverage.xml

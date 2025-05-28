@@ -79,7 +79,7 @@ jobs:
             -e POSTGRES_PASSWORD=password \
             -e POSTGRES_HOST=postgres \
             -e POSTGRES_PORT=5432 \
-            -v ${{ github.workspace }}/coverage:/usr/src/app/coverage \
+            -v ${{ github.workspace }}/coverage:/var/www/magazyn360/app/magazyn360-api/coverage \
             magazyn360 \
             /var/www/magazyn360/app/magazyn360-api/bin/run_tests.sh
 
