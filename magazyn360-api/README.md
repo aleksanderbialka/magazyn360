@@ -116,13 +116,3 @@ magazyn360/
 ```
 
 ---
-
-## 🧠 Autor
-
-Projekt realizowany przez **Aleksander Białka** w ramach zajęć *Programowanie aplikacji webowych* i *Technologie Server Side*. Wspiera deployment klasy enterprise w chmurze Azure z użyciem Rancher Desktop do testów lokalnych.
-
----
-
-## 📄 Licencja
-
-Projekt edukacyjny. Można go dowolnie modyfikować na potrzeby nauki i prezentacji.
