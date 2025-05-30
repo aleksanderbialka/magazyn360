@@ -14,6 +14,10 @@ spec:
       labels:
         app: "{{ .Chart.Name }}"
     spec:
+      imagePullSecrets:
+        {{- range .Values.image.pullSecrets }}
+        - name: {{ . }}
+        {{- end }}
       containers:
         - name: "{{ .Chart.Name }}"
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -89,9 +93,3 @@ spec:
       volumes:
         - name: static-files
           emptyDir: {}
-{{- if .Values.image.pullSecrets }}
-imagePullSecrets:
-  {{- range .Values.image.pullSecrets }}
-  - name: {{ . }}
-  {{- end }}
-{{- end }}

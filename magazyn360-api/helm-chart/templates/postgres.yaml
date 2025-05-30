@@ -51,11 +51,13 @@ spec:
                 secretKeyRef:
                   name: magazyn360-secrets
                   key: POSTGRES_PASSWORD
+              - name: PGDATA
+                value: /var/lib/postgresql/data/pgdata
           ports:
             - containerPort: 5432
           volumeMounts:
             - name: postgres-storage
-              mountPath: /var/lib/postgresql/data
+              mountPath: /var/lib/postgresql/data/pgdata
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:
