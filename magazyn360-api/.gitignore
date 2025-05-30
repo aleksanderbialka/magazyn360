@@ -107,3 +107,6 @@ media/
 
 # Gunicorn PID file
 gunicorn.pid
+
+# Secrets
+helm-chart/secrets.yaml

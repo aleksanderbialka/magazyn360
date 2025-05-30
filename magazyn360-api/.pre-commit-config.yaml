@@ -16,5 +16,7 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: check-yaml
+        args: [-m]
+        exclude: magazyn360-api/helm-chart/
       - id: check-added-large-files
       - id: check-merge-conflict

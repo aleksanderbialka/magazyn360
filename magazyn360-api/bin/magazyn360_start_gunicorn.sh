@@ -3,6 +3,7 @@
 set -e
 
 source /var/www/magazyn360/app/magazyn360_env/bin/activate
+cd /var/www/magazyn360/app/magazyn360-api/
 
 echo "> Running migrations..."
 python manage.py migrate
