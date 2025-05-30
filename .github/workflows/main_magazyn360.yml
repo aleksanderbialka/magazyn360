@@ -171,7 +171,7 @@ jobs:
 
       - name: Decode Helm secrets.yaml 🔐
         run: |
-          echo "${{ secrets.HELM_SECRETS_YAML2 }}" | base64 -d > helm-chart/secrets.yaml
+          echo "${{ secrets.HELM_SECRETS_YAML2 }}" | base64 -d > ./magazyn360-api/helm-chart/secrets.yaml
 
       - name: Helm ${{ github.event.inputs.operation || 'Reinstall' }} 🚀
         run: |
@@ -179,5 +179,5 @@ jobs:
             -n magazyn360 --create-namespace \
             --set image.repository=${{ secrets.JFROG_REGISTRY }}/${{ secrets.JFROG_REPO }}/${{ vars.IMAGE_NAME }} \
             --set image.tag=${{ github.ref_name }} \
-            -f helm-chart/values.yaml \
-            -f helm-chart/secrets.yaml
+            -f ./magazyn360-api/helm-chart/values.yaml \
+            -f ./magazyn360-api/helm-chart/secrets.yaml
