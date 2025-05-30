@@ -18,7 +18,7 @@ on:
           - Uninstall
           - Reinstall
   push:
-    branches: ["master", "dev", "cicd"]
+    branches: ["master", "dev", "cicd", "deploy"]
 
 permissions:
   checks: write
@@ -145,3 +145,39 @@ jobs:
         run: |
           docker tag $IMAGE_NAME:$IMAGE_TAG $FULL_IMAGE_NAME
           docker push $FULL_IMAGE_NAME
+
+  deploy:
+    name: Deploy to Kubernetes via Helm ⚙️
+    runs-on: ubuntu-latest
+    needs: build-and-tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'latest'
+
+      - name: Set up KUBECONFIG from base64 secret 🔐
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 -d > ~/.kube/config
+
+      - name: Decode Helm secrets.yaml 🔐
+        run: |
+          echo "${{ secrets.HELM_SECRETS_YAML2 }}" | base64 -d > helm-chart/secrets.yaml
+
+      - name: Helm ${{ github.event.inputs.operation || 'Reinstall' }} 🚀
+        run: |
+          helm upgrade --install magazyn360 ./magazyn360-api/helm-chart \
+            -n magazyn360 --create-namespace \
+            --set image.repository=${{ secrets.JFROG_REGISTRY }}/${{ secrets.JFROG_REPO }}/${{ vars.IMAGE_NAME }} \
+            --set image.tag=${{ github.ref_name }} \
+            -f helm-chart/values.yaml \
+            -f helm-chart/secrets.yaml

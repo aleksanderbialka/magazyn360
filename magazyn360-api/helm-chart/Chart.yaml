@@ -1,0 +1,5 @@
+apiVersion: v2
+name: magazyn360
+description: Helm chart for deploying the Magazyn360 Django API
+version: 0.1.0
+appVersion: "1.0"

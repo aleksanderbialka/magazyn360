@@ -1,0 +1,25 @@
+image:
+  repository: magazyn360
+  tag: 30.05.2025
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 8000
+
+postgres:
+  host: magazyn360-postgres
+  port: 5432
+  user: test
+  db: local
+
+django:
+  allowedHosts: localhost,127.0.0.1,magazyn360.local
+  debug: "False"
+
+ingress:
+  enabled: true
+  host: magazyn360.local
+  port: 8080
