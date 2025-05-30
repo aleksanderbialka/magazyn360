@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Chart.Name }}"
+  labels:
+    app: "{{ .Chart.Name }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: "{{ .Chart.Name }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Chart.Name }}"
+    spec:
+      imagePullSecrets:
+        {{- range .Values.image.pullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      containers:
+        - name: "{{ .Chart.Name }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          ports:
+            - containerPort: 8000
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: magazyn360-secrets
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: magazyn360-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: magazyn360-secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: magazyn360-secrets
+                  key: POSTGRES_HOST
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: magazyn360-secrets
+                  key: POSTGRES_PORT
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: magazyn360-secrets
+                  key: SECRET_KEY
+            - name: JWT_ACCESS_TOKEN_LIFETIME_MINUTES
+              valueFrom:
+                secretKeyRef:
+                  name: magazyn360-secrets
+                  key: JWT_ACCESS_TOKEN_LIFETIME_MINUTES
+            - name: JWT_REFRESH_TOKEN_LIFETIME_DAYS
+              valueFrom:
+                secretKeyRef:
+                  name: magazyn360-secrets
+                  key: JWT_REFRESH_TOKEN_LIFETIME_DAYS
+            - name: JWT_ROTATE_REFRESH_TOKENS
+              valueFrom:
+                secretKeyRef:
+                  name: magazyn360-secrets
+                  key: JWT_ROTATE_REFRESH_TOKENS
+            - name: JWT_BLACKLIST_AFTER_ROTATION
+              valueFrom:
+                secretKeyRef:
+                  name: magazyn360-secrets
+                  key: JWT_BLACKLIST_AFTER_ROTATION
+            - name: DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: magazyn360-env
+                  key: DEBUG
+            - name: ALLOWED_HOSTS
+              valueFrom:
+                configMapKeyRef:
+                  name: magazyn360-env
+                  key: ALLOWED_HOSTS
+
+          volumeMounts:
+            - name: static-files
+              mountPath: /static
+
+      volumes:
+        - name: static-files
+          emptyDir: {}
