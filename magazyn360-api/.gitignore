@@ -44,6 +44,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+results/
 
 # Translations
 *.mo
@@ -96,3 +97,13 @@ env/
 
 # Local environment variables
 .env
+
+# Static & media files
+staticfiles/
+media/
+
+# Log files
+*.log
+
+# Gunicorn PID file
+gunicorn.pid

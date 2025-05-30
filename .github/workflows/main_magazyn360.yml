@@ -1,0 +1,111 @@
+name: Magazyn360 CI/CD -- MAIN workflow 🦁
+run-name: ${{ github.event.head_commit.message }} -- ${{ github.actor}} 🦁
+
+on:
+  push:
+    branches: ["master", "dev"]
+
+permissions:
+  checks: write
+  contents: read
+
+jobs:
+  lint:
+    name: Lint with Ruff and Black
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 🐍
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Poetry 📘
+        run: pip install poetry==1.8.5
+
+      - name: Install dependencies for linting
+        working-directory: magazyn360-api
+        run: poetry install --only dev
+
+      - name: Run Ruff
+        working-directory: magazyn360-api
+        run: poetry run ruff check .
+
+      - name: Run Black (check only) ⚫️
+        working-directory: magazyn360-api
+        run: poetry run black --check .
+
+  tests:
+    name: Run Tests in Docker with Postgres 🐳
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx 🛠️
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create Docker network
+        run: docker network create gha-network
+
+      - name: Start Postgres
+        run: |
+          docker run -d \
+            --name postgres \
+            --network gha-network \
+            -e POSTGRES_DB=postgres \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=password \
+            -p 5432:5432 \
+            postgres:15
+
+      - name: Wait for Postgres
+        run: |
+          for i in {1..30}; do
+            docker exec postgres pg_isready -U postgres && break
+            sleep 1
+          done
+
+      - name:  Build Docker image 🐳
+        run: docker build -t magazyn360 -f ./magazyn360-api/Dockerfile ./magazyn360-api
+
+      - name: Launch Docker container and run tests 🧪
+        run: |
+          docker run --rm \
+            --network gha-network \
+            -e SECRET_KEY=testsecret \
+            -e DEBUG=False \
+            -e POSTGRES_DB=postgres \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=password \
+            -e POSTGRES_HOST=postgres \
+            -e POSTGRES_PORT=5432 \
+            -v ${{ github.workspace }}/results:/var/www/magazyn360/app/magazyn360-api/results \
+            -v ${{ github.workspace }}/htmlcov:/var/www/magazyn360/app/magazyn360-api/htmlcov \
+            magazyn360 \
+            /var/www/magazyn360/app/magazyn360-api/bin/run_tests.sh
+
+      - name: Publish test report in GitHub UI 📊
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+              name: Pytest Test Results
+              path: results/pytest-results.xml
+              reporter: java-junit
+
+      - name: Upload Coverage HTML Report 📊
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-report
+          path: htmlcov
+
+      - name: Upload HTML test report 📄
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-html-report
+          path: results/pytest-report.html

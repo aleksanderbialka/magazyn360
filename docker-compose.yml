@@ -10,13 +10,13 @@ volumes:
 
 services:
   magazyn360:
-    image: magazyn360:latest
+    image: magazyn360:24.05.2025
     container_name: magazyn360
     restart: always
     networks:
       - magazyn360-net
     volumes:
-      - ./magazyn360-api:/usr/src/magazyn360-api
+       - ./magazyn360-api:/var/www/magazyn360/app/magazyn360-api
     env_file:
       - ./magazyn360-api/.env
     ports:

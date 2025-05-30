@@ -51,6 +51,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "magazyn360.urls"
@@ -133,6 +134,24 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": env.bool("JWT_BLACKLIST_AFTER_ROTATION", default=True),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+# Swagger and API documentation
+INSTALLED_APPS += [
+    "drf_yasg",
+]
+
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer <your_token_here>'",
+        }
+    },
+    "USE_SESSION_AUTH": False,
+}
+
 # Internationalization
 
 LANGUAGE_CODE = "en-us"
@@ -147,6 +166,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 
