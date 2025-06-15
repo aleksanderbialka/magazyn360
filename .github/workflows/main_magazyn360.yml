@@ -151,7 +151,7 @@ jobs:
     name: Deploy to Kubernetes via Helm ⚙️
     runs-on: ubuntu-latest
     needs: build-and-tests
-    if: github.event.inputs.operation != 'None'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.operation != 'None'
 
     steps:
       - uses: actions/checkout@v4
