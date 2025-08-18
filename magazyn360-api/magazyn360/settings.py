@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 # Custom apps
 INSTALLED_APPS += [
     "apps.core.apps.CoreConfig",
+    "apps.warehouse.apps.WarehouseConfig",
 ]
 
 MIDDLEWARE = [

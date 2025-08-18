@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 from decimal import Decimal
 
 from django.db import models
@@ -20,10 +19,10 @@ class Warehouse(models.Model):
         is_active: Whether the warehouse is currently active
     """
 
-    id: models.UUIDField[uuid.UUID] = models.UUIDField(
+    id: models.UUIDField = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False
     )
-    name: models.CharField[str] = models.CharField(max_length=255)
+    name: models.CharField = models.CharField(max_length=255)
     company: models.ForeignKey = models.ForeignKey(
         "core.Company",
         on_delete=models.CASCADE,
@@ -36,9 +35,9 @@ class Warehouse(models.Model):
         related_name="warehouses",
         verbose_name=_("Address"),
     )
-    is_active: models.BooleanField[bool] = models.BooleanField(default=True)
-    created_at: models.DateTimeField[datetime] = models.DateTimeField(auto_now_add=True)
-    updated_at: models.DateTimeField[datetime] = models.DateTimeField(auto_now=True)
+    is_active: models.BooleanField = models.BooleanField(default=True)
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
+    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name: str = _("Warehouse")
@@ -56,7 +55,7 @@ class Warehouse(models.Model):
 class Product(models.Model):
     """Model representing a product or good."""
 
-    id: models.UUIDField[uuid.UUID] = models.UUIDField(
+    id: models.UUIDField = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False
     )
     company: models.ForeignKey = models.ForeignKey(
@@ -65,21 +64,21 @@ class Product(models.Model):
         related_name="products",
         verbose_name=_("Company"),
     )
-    name: models.CharField[str] = models.CharField(max_length=255)
-    sku: models.CharField[str] = models.CharField(max_length=64)
-    ean: models.CharField[str] = models.CharField(
+    name: models.CharField = models.CharField(max_length=255)
+    sku: models.CharField = models.CharField(max_length=64)
+    ean: models.CharField = models.CharField(
         max_length=13, blank=True, default="", db_index=True
     )
     unit = models.CharField(max_length=16, choices=Unit.choices, default=Unit.PCS)
-    is_active: models.BooleanField[bool] = models.BooleanField(default=True)
-    min_stock: models.DecimalField[Decimal] = models.DecimalField(
+    is_active: models.BooleanField = models.BooleanField(default=True)
+    min_stock: models.DecimalField = models.DecimalField(
         max_digits=12, decimal_places=2, default=Decimal("0.00")
     )
-    max_stock: models.DecimalField[Decimal] = models.DecimalField(
+    max_stock: models.DecimalField = models.DecimalField(
         max_digits=12, decimal_places=2, default=Decimal("0.00")
     )
-    created_at: models.DateTimeField[datetime] = models.DateTimeField(auto_now_add=True)
-    updated_at: models.DateTimeField[datetime] = models.DateTimeField(auto_now=True)
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
+    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
@@ -107,22 +106,22 @@ class Product(models.Model):
 class Stock(models.Model):
     """Stock level of a product in a warehouse."""
 
-    id: models.UUIDField[uuid.UUID] = models.UUIDField(
+    id: models.UUIDField = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False
     )
-    warehouse: models.ForeignKey[Warehouse] = models.ForeignKey(
+    warehouse: models.ForeignKey = models.ForeignKey(
         Warehouse, on_delete=models.CASCADE, related_name="stocks"
     )
-    product: models.ForeignKey[Product] = models.ForeignKey(
+    product: models.ForeignKey = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="stocks"
     )
-    quantity: models.DecimalField[Decimal] = models.DecimalField(
+    quantity: models.DecimalField = models.DecimalField(
         max_digits=12, decimal_places=2, default=Decimal("0.00")
     )
-    reserved: models.DecimalField[Decimal] = models.DecimalField(
+    reserved: models.DecimalField = models.DecimalField(
         max_digits=12, decimal_places=2, default=Decimal("0.00")
     )
-    updated_at: models.DateTimeField[datetime] = models.DateTimeField(auto_now=True)
+    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
@@ -152,19 +151,17 @@ class WarehouseDocument(models.Model):
     """Warehouse document (PZ, WZ, MM, RW, PW, etc.).
     For MM we track the source and destination warehouses."""
 
-    id: models.UUIDField[uuid.UUID] = models.UUIDField(
+    id: models.UUIDField = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False
     )
-    company = models.ForeignKey(
+    company: models.ForeignKey = models.ForeignKey(
         "core.Company", on_delete=models.PROTECT, related_name="warehouse_documents"
     )
-    doc_type: models.CharField[str] = models.CharField(
-        max_length=2, choices=DocType.choices
-    )
-    status = models.CharField(
+    doc_type: models.CharField = models.CharField(max_length=2, choices=DocType.choices)
+    status: models.CharField = models.CharField(
         max_length=16, choices=DocStatus.choices, default=DocStatus.DRAFT
     )
-    number: models.CharField[str] = models.CharField(max_length=64)
+    number: models.CharField = models.CharField(max_length=64)
     warehouse: models.ForeignKey = models.ForeignKey(
         Warehouse,
         on_delete=models.PROTECT,
@@ -172,14 +169,14 @@ class WarehouseDocument(models.Model):
         null=True,
         blank=True,
     )
-    from_warehouse = models.ForeignKey(
+    from_warehouse: models.ForeignKey = models.ForeignKey(
         Warehouse,
         on_delete=models.PROTECT,
         related_name="outgoing_transfers",
         null=True,
         blank=True,
     )
-    to_warehouse = models.ForeignKey(
+    to_warehouse: models.ForeignKey = models.ForeignKey(
         Warehouse,
         on_delete=models.PROTECT,
         related_name="incoming_transfers",
@@ -188,8 +185,8 @@ class WarehouseDocument(models.Model):
     )
     date: models.DateField = models.DateField(db_index=True)
     posted_at: models.DateTimeField = models.DateTimeField(null=True, blank=True)
-    created_at: models.DateTimeField[datetime] = models.DateTimeField(auto_now_add=True)
-    updated_at: models.DateTimeField[datetime] = models.DateTimeField(auto_now=True)
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
+    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True)
 
     fiscal_year = models.PositiveIntegerField()  # simple key for numbering
 
@@ -230,22 +227,18 @@ class WarehouseDocument(models.Model):
 class WarehouseDocumentItem(models.Model):
     """Item/position in a warehouse document."""
 
-    id: models.UUIDField[uuid.UUID] = models.UUIDField(
+    id: models.UUIDField = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False
     )
-    document: models.ForeignKey[WarehouseDocument] = models.ForeignKey(
+    document: models.ForeignKey = models.ForeignKey(
         WarehouseDocument, on_delete=models.CASCADE, related_name="items"
     )
-    product: models.ForeignKey[Product] = models.ForeignKey(
-        Product, on_delete=models.PROTECT
-    )
-    quantity: models.DecimalField[Decimal] = models.DecimalField(
-        max_digits=16, decimal_places=2
-    )
-    unit: models.CharField[str] = models.CharField(
+    product: models.ForeignKey = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity: models.DecimalField = models.DecimalField(max_digits=16, decimal_places=2)
+    unit: models.CharField = models.CharField(
         max_length=16, choices=Unit.choices, default=Unit.PCS
     )
-    price: models.DecimalField[Decimal | None] = models.DecimalField(
+    price: models.DecimalField = models.DecimalField(
         max_digits=16, decimal_places=2, null=True, blank=True
     )
 
