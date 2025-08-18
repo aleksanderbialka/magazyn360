@@ -60,11 +60,11 @@ class TestCompanyAdmin(TestCase):
         mock_company.primary_address = mock_address
 
         result = self.company_admin.primary_address_city(mock_company)
-        self.assertEqual(result, "Test City")
+        assert result == "Test City"
 
     def test_primary_address_city_without_primary_address(self):
         mock_company = Mock()
         mock_company.primary_address = None
 
         result = self.company_admin.primary_address_city(mock_company)
-        self.assertIsNone(result)
+        assert result is None

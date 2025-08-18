@@ -1,5 +1,6 @@
 from apps.core.enums import Role
 
+
 """Permissions configuration for the application."""
 
 GROUP_MODEL_PERMISSIONS = {

@@ -8,6 +8,7 @@ from pathlib import Path
 
 import environ
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
@@ -146,7 +147,7 @@ SWAGGER_SETTINGS = {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header",
-            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer <your_token_here>'",
+            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer <your_token_here>'",  # noqa:E501
         }
     },
     "USE_SESSION_AUTH": False,
