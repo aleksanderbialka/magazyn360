@@ -55,9 +55,7 @@ class StockSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source="product.name", read_only=True)
     product_sku = serializers.CharField(source="product.sku", read_only=True)
     warehouse_name = serializers.CharField(source="warehouse.name", read_only=True)
-    available = serializers.DecimalField(
-        max_digits=12, decimal_places=2, read_only=True
-    )
+    available = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Stock
@@ -74,6 +72,10 @@ class StockSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
         read_only_fields = ["id", "available", "updated_at"]
+
+    def get_available(self, obj):
+        """Calculate available stock."""
+        return obj.quantity - obj.reserved
 
 
 class WarehouseDocumentItemSerializer(serializers.ModelSerializer):
@@ -108,9 +110,7 @@ class WarehouseDocumentSerializer(serializers.ModelSerializer):
     """Serializer for WarehouseDocument model."""
 
     items = WarehouseDocumentItemSerializer(many=True, read_only=True)
-    total_value = serializers.DecimalField(
-        max_digits=12, decimal_places=2, read_only=True
-    )
+    total_value = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = WarehouseDocument
@@ -139,6 +139,15 @@ class WarehouseDocumentSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
+    def get_total_value(self, obj):
+        """Calculate total value of all document items."""
+        total = sum(
+            (item.quantity * item.price)
+            for item in obj.items.all()
+            if item.quantity and item.price
+        )
+        return total
 
 
 class WarehouseDocumentCreateSerializer(serializers.ModelSerializer):
