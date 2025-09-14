@@ -60,6 +60,7 @@ sphinx-rtd-theme = "^3.0.2"
 sphinxcontrib-django = "^2.5"
 gunicorn = "^23.0.0"
 whitenoise = "^6.9.0"
+django-filter = "^25.1"
 
 
 [tool.poetry.group.dev.dependencies]
