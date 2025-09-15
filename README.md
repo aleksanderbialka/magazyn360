@@ -1,34 +1,34 @@
 
 # 🏗️ Magazyn360
 
-Magazyn360 to nowoczesny system ERP typu SaaS wspomagający zarządzanie składami budowlanymi. Projekt zakłada pełną automatyzację procesów wdrożeniowych z wykorzystaniem CI/CD, konteneryzację aplikacji w Dockerze oraz orkiestrację za pomocą Kubernetes (AKS).
+Magazyn360 is a modern SaaS ERP system designed to support the management of small and medium-sized enterprises. The project features full automation of deployment processes using CI/CD, application containerization with Docker, and orchestration with Kubernetes (K8s).
 
 ---
 
-## 📦 Stack technologiczny
+## 📦 Technology Stack
 
 - **Backend**: Python, Django, Django REST Framework
-- **Baza danych**: PostgreSQL
-- **API**: REST + Swagger (drf-spectacular)
-- **Frontend**: (docelowo) React
+- **Database**: PostgreSQL
+- **API**: REST + Swagger
+- **Frontend**: Angular** (TODO)
 - **CI/CD**: GitHub Actions
-- **Konteneryzacja**: Docker
-- **Rejestr obrazów**: JFrog Artifactory
-- **Kubernetes**: AKS (Azure Kubernetes Service)
-- **Helm**: Helm Chart do zarządzania wdrożeniami
-- **Monitorowanie błędów**: Sentry
-- **Testy**: pytest + coverage + pytest-html
+- **Containerization**: Docker
+- **Image Registry**: Github Registry Containers
+- **Kubernetes**: K8s
+- **Helm**: Helm Chart for deployment management
+- **Error Monitoring**: Sentry
+- **Testing**: pytest + coverage + pytest-html
 
 ---
 
-## 🚀 Szybki start lokalnie
+## 🚀 Quick Local Start
 
 ```bash
-# 1. Klonuj repozytorium
+# 1. Clone the repository
 git clone https://github.com/your-user/magazyn360.git
 cd magazyn360
 
-# 2. Uruchom usługę lokalnie z Docker Compose
+# 2. Run the service locally with Docker Compose
 docker-compose up --build
 ```
 
@@ -36,14 +36,14 @@ docker-compose up --build
 
 ## 🔄 CI/CD Workflow
 
-Główne kroki pipeline’u CI/CD (`.github/workflows/main.yml`):
+Main steps of the CI/CD pipeline (`.github/workflows/main.yml`):
 
-1. **Linting** – z użyciem Ruff i Black
-2. **Build & Test** – budowa kontenera + testy jednostkowe
-3. **Push** – publikacja obrazu do JFrog Artifactory
-4. **Deploy** – instalacja/aktualizacja na AKS przez Helm
+1. **Linting** – using Ruff and Black
+2. **Build & Test** – container build + unit tests
+3. **Push** – publish image to GHCR Artifactory
+4. **Deploy** – install/update on AKS via Helm
 
-Aby uruchomić pipeline ręcznie:
+To trigger the pipeline manually:
 
 ```bash
 GitHub → Actions → Magazyn360 CI/CD -- MAIN workflow
@@ -51,15 +51,16 @@ GitHub → Actions → Magazyn360 CI/CD -- MAIN workflow
 
 ---
 
-## ⚙️ Deployment na AKS (Kubernetes)
+## ⚙️ Deployment on K8s (Kubernetes)
 
-Używamy Helm Charta z plikami:
+We use a Helm Chart with the following files:
 
 ```
 helm-chart/
 ├── Chart.yaml
+
 ├── values.yaml
-├── secrets.yaml (base64 w GitHub Secrets)
+├── secrets.yaml (base64 in GitHub Secrets)
 └── templates/
     ├── deployment.yaml
     ├── service.yaml
@@ -68,7 +69,7 @@ helm-chart/
     └── secrets.yaml
 ```
 
-Przykład lokalnego deploya:
+Example local deployment:
 
 ```bash
 helm upgrade --install magazyn360 ./helm-chart -n magazyn360 --create-namespace \
@@ -78,39 +79,37 @@ helm upgrade --install magazyn360 ./helm-chart -n magazyn360 --create-namespace 
 
 ---
 
-## 🔑 Sekrety i konfiguracja
+## 🔑 Secrets and Configuration
 
-- Kubeconfig do AKS przechowywany jako `KUBECONFIG_BASE64`
-- Plik `secrets.yaml` trzymany jako `HELM_SECRETS_YAML2`
-- Dane logowania do JFrog w GitHub Secrets:
-  - `JFROG_REGISTRY`
-  - `JFROG_REPO`
-  - `JFROG_USERNAME`
-  - `JFROG_PASSWORD`
+- AKS kubeconfig stored as `KUBECONFIG_BASE64`
+- `secrets.yaml` file stored as `HELM_SECRETS_YAML2`
+- GHCR credentials in GitHub Secrets:
+  - `GITHUB_TOKEN`
 
 ---
 
-## 🧪 Testowanie
+## 🧪 Testing
 
 ```bash
-# Uruchomienie testów z raportem HTML:
+# Run tests with HTML report:
 poetry run pytest --junitxml=results/pytest-results.xml --html=results/pytest-report.html
 ```
 
-Raporty pojawiają się jako artefakty w GitHub Actions.
+Reports appear as artifacts in GitHub Actions.
 
 ---
 
-## 📂 Struktura katalogów
+## 📂 Directory Structure
 
 ```
 magazyn360/
 ├── magazyn360-api/           # Django API
-│   ├── apps/core/            # Modele: User, Company, Address
-│   ├── bin/run_tests.sh      # Skrypt do uruchamiania testów
+│   ├── apps/core/            # Models: User, Company, Address
+│   ├── apps/warehouse/       # Models: Warehouse, Product, Stock, WarehouseDocument, WarehouseDocumentItem
+│   ├── bin/run_tests.sh      # Test runner script
 │   └── ...
 ├── helm-chart/               # Helm Chart
-├── .github/workflows/        # Pliki workflow GitHub Actions
+├── .github/workflows/        # GitHub Actions workflow files
 ├── docker-compose.yml
 └── README.md
 ```

@@ -1,9 +1,11 @@
 import importlib
+import logging
 
 from django.apps import apps
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
+
 
 """
 Command to initialize permissions for all apps in the project.
@@ -16,10 +18,14 @@ The `GROUP_MODEL_PERMISSIONS` dictionary should be structured as follows:
         ...
     }
 }
-Where `model_name` is the name of the model, `role_enum` is an enumeration value representing a user role,
-and `action` is the action to be performed (e.g., "add", "change", "delete", "view").
-The command will create groups based on the role enums and assign the corresponding permissions to each group.
+Where `model_name` is the name of the model, `role_enum` is an enumeration value
+representing a user role, and `action` is the action to be performed
+(e.g., "add", "change", "delete", "view").
+The command will create groups based on the role enums and assign
+the corresponding permissions to each group.
 """
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -32,7 +38,9 @@ class Command(BaseCommand):
                     f"{app_config.name}.permissions_config"
                 )
             except ModuleNotFoundError:
-                continue
+                logger.warning(
+                    "Permissions module not found for app: %s", app_config.label
+                )
 
             if not hasattr(permissions_module, "GROUP_MODEL_PERMISSIONS"):
                 continue
@@ -67,13 +75,16 @@ class Command(BaseCommand):
                             group.permissions.add(perm)
                             self.stdout.write(
                                 self.style.SUCCESS(
-                                    f" Added permission: {codename} ({app_config.label}.{model_name}) to group: {group_name}"
+                                    f" Added permission: {codename} "
+                                    f"({app_config.label}.{model_name}) "
+                                    f"to group: {group_name}"
                                 )
                             )
                         except Permission.DoesNotExist:
                             self.stdout.write(
                                 self.style.WARNING(
-                                    f" Permission {codename} does not exist for model {model_name} in {app_config.label} app."
+                                    f" Permission {codename} does not exist "
+                                    f"for model {model_name} in {app_config.label} app."
                                 )
                             )
 

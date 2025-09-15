@@ -8,6 +8,7 @@ from pathlib import Path
 
 import environ
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
@@ -35,12 +36,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_filters",
 ]
 
 
 # Custom apps
 INSTALLED_APPS += [
     "apps.core.apps.CoreConfig",
+    "apps.warehouse.apps.WarehouseConfig",
 ]
 
 MIDDLEWARE = [
@@ -146,7 +149,7 @@ SWAGGER_SETTINGS = {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header",
-            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer <your_token_here>'",
+            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer <your_token_here>'",  # noqa:E501
         }
     },
     "USE_SESSION_AUTH": False,

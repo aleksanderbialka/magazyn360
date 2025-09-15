@@ -24,7 +24,7 @@ def user_validated_data():
 @pytest.mark.django_db
 class TestUserSerializer:
     @pytest.mark.parametrize(
-        "company,expected",
+        ("company", "expected"),
         [
             (Mock(name="Test Company"), "Test Company"),
             (None, None),
@@ -39,7 +39,7 @@ class TestUserSerializer:
         assert serializer.get_company_name(mock_user) == expected
 
     @pytest.mark.parametrize(
-        "update_data,with_password",
+        ("update_data", "with_password"),
         [
             (
                 {
