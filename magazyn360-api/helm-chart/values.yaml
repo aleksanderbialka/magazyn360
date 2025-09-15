@@ -1,6 +1,9 @@
 image:
+  repository: ghcr.io/aleksanderbialka/magazyn360
+  tag: dev
+  pullPolicy: IfNotPresent
   pullSecrets:
-    - jfrog-regcred
+    - ghcr-auth
 
 replicaCount: 1
 
@@ -15,10 +18,10 @@ postgres:
   db: local
 
 django:
-  allowedHosts: localhost,127.0.0.1,magazyn360.local
+  allowedHosts: localhost,127.0.0.1,magazyn360.local,magazyn360.k8s
   debug: "False"
 
 ingress:
   enabled: true
-  host: magazyn360.local
-  port: 8080
+  host: magazyn360.k8s
+  port: 8000
