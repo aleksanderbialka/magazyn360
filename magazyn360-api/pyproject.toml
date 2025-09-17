@@ -61,6 +61,7 @@ sphinxcontrib-django = "^2.5"
 gunicorn = "^23.0.0"
 whitenoise = "^6.9.0"
 django-filter = "^25.1"
+kafka-python = "^2.2.15"
 
 
 [tool.poetry.group.dev.dependencies]
