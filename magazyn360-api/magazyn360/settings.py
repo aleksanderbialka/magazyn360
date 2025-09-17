@@ -169,16 +169,26 @@ INSTALLED_APPS += [
     "drf_yasg",
 ]
 
+if DEBUG:
+    swagger_api_url = "http://localhost:8000"
+else:
+    swagger_api_url = "https://magazyn360.pl"
+
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
         "Bearer": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header",
-            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer <your_token_here>'",  # noqa:E501
+            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer <your_token_here>'",  # noqa: E501
         }
     },
     "USE_SESSION_AUTH": False,
+    "USE_HTTPS": not DEBUG,
+    "DEFAULT_API_URL": swagger_api_url,
+    "DOC_EXPANSION": "none",
+    "SHOW_REQUEST_HEADERS": True,
+    "PERSIST_AUTH": True,
 }
 
 # Internationalization
