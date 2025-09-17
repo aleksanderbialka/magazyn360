@@ -4,9 +4,9 @@ kind: Ingress
 metadata:
   name: {{ .Chart.Name }}-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
+  ingressClassName: traefik
   rules:
     - host: {{ .Values.ingress.host }}
       http:
@@ -17,5 +17,15 @@ spec:
               service:
                 name: {{ .Chart.Name }}
                 port:
-                  number: {{ .Values.service.port }}
+                  name: http
+    - host: www.{{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Chart.Name }}
+                port:
+                  name: http
 {{- end }}
