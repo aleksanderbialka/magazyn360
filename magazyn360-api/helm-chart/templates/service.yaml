@@ -5,7 +5,7 @@ metadata:
   labels:
     app: "{{ .Chart.Name }}"
 spec:
-  type: "{{ .Values.service.type }}"
+  type: {{ .Values.service.type | quote }}
   selector:
     app: "{{ .Chart.Name }}"
   ports:

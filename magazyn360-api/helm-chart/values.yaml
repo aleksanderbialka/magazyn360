@@ -18,10 +18,9 @@ postgres:
   db: local
 
 django:
-  allowedHosts: localhost,127.0.0.1,magazyn360.local,magazyn360.k8s
+  allowedHosts: localhost,127.0.0.1,magazyn360.local,magazyn360.k8s,magazyn360.pl,magazyn360.magazyn360.svc.cluster.local,www.magazyn360.pl
   debug: "False"
 
 ingress:
   enabled: true
-  host: magazyn360.k8s
-  port: 8000
+  host: magazyn360.pl
