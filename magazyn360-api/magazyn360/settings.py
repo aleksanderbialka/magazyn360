@@ -3,6 +3,7 @@ Django settings for magazyn360 project.
 """
 
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -189,6 +190,40 @@ SWAGGER_SETTINGS = {
     "DOC_EXPANSION": "none",
     "SHOW_REQUEST_HEADERS": True,
     "PERSIST_AUTH": True,
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
 }
 
 # Internationalization
