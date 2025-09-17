@@ -55,6 +55,7 @@ class StockSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source="product.name", read_only=True)
     product_sku = serializers.CharField(source="product.sku", read_only=True)
     warehouse_name = serializers.CharField(source="warehouse.name", read_only=True)
+    product_unit = serializers.CharField(source="product.unit", read_only=True)
     available = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -64,6 +65,7 @@ class StockSerializer(serializers.ModelSerializer):
             "warehouse",
             "warehouse_name",
             "product",
+            "product_unit",
             "product_name",
             "product_sku",
             "quantity",
@@ -104,6 +106,18 @@ class WarehouseDocumentItemSerializer(serializers.ModelSerializer):
         if obj.quantity and obj.price:
             return obj.quantity * obj.price
         return None
+
+
+class WarehouseDocumentItemCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating document items (without document field)."""
+
+    class Meta:
+        model = WarehouseDocumentItem
+        fields = [
+            "product",
+            "quantity",
+            "price",
+        ]
 
 
 class WarehouseDocumentSerializer(serializers.ModelSerializer):
@@ -153,7 +167,7 @@ class WarehouseDocumentSerializer(serializers.ModelSerializer):
 class WarehouseDocumentCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating warehouse documents with items."""
 
-    items = WarehouseDocumentItemSerializer(many=True)
+    items = WarehouseDocumentItemCreateSerializer(many=True)
 
     class Meta:
         model = WarehouseDocument
