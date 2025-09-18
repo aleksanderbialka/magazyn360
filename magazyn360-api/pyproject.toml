@@ -62,6 +62,7 @@ gunicorn = "^23.0.0"
 whitenoise = "^6.9.0"
 django-filter = "^25.1"
 kafka-python = "^2.2.15"
+pillow = "^11.3.0"
 
 
 [tool.poetry.group.dev.dependencies]

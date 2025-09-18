@@ -242,6 +242,39 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+# Media files
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# File upload settings
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10 MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10 MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
+
+# Image processing
+
+DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
+# Allowed image extensions
+
+ALLOWED_IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"]
+MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5 MB
+MAX_IMAGE_DIMENSIONS = (5000, 5000)  # Width, Height
+
+# Content types whitelist for uploads
+
+ALLOWED_UPLOAD_CONTENT_TYPES = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/gif",
+    "image/bmp",
+    "image/tiff",
+    "image/webp",
+]
+
 # Default primary key field type
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

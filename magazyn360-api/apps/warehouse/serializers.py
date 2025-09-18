@@ -1,14 +1,22 @@
+import logging
+import os
+
+from django.core.files.images import get_image_dimensions
 from django.db import transaction
 from rest_framework import serializers
 
 from .enums import DocType
 from .models import (
     Product,
+    ProductImage,
     Stock,
     Warehouse,
     WarehouseDocument,
     WarehouseDocumentItem,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class WarehouseSerializer(serializers.ModelSerializer):
@@ -28,8 +36,152 @@ class WarehouseSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_at", "updated_at"]
 
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    """Serializer for ProductImage model."""
+
+    image_url = serializers.SerializerMethodField()
+    image_size = serializers.SerializerMethodField()
+    file_size = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductImage
+        fields = [
+            "id",
+            "product",
+            "image",
+            "image_url",
+            "image_size",
+            "file_size",
+            "alt_text",
+            "is_primary",
+            "order",
+            "created_at",
+        ]
+        read_only_fields = ["id", "created_at", "image_url", "image_size", "file_size"]
+
+    def get_image_url(self, obj):
+        """Get full URL for image."""
+        if obj.image:
+            try:
+                request = self.context.get("request")
+                if request:
+                    return request.build_absolute_uri(obj.image.url)
+                return obj.image.url
+            except (ValueError, AttributeError, FileNotFoundError, OSError) as e:
+                logger.exception(
+                    "Failed to build image URL for ProductImage %s: %s", obj.id, str(e)
+                )
+                return None
+        return None
+
+    def get_image_size(self, obj):
+        """Get image dimensions."""
+        if obj.image:
+            try:
+                width, height = get_image_dimensions(obj.image)
+                return {"width": width, "height": height}
+            except OSError as e:
+                logger.exception(
+                    "Failed to get image dimensions for ProductImage %s (file access error): %s",
+                    obj.id,
+                    str(e),
+                )
+                return None
+            except (ValueError, TypeError, AttributeError) as e:
+                logger.exception(
+                    "Failed to get image dimensions for ProductImage %s: %s",
+                    obj.id,
+                    str(e),
+                )
+                return None
+        return None
+
+    def get_file_size(self, obj):
+        """Get file size in bytes."""
+        if obj.image:
+            try:
+                return obj.image.size
+            except (OSError, AttributeError, ValueError) as e:
+                logger.exception(
+                    "Failed to get file size for ProductImage %s: %s", obj.id, str(e)
+                )
+                return None
+        return None
+
+    def validate_image(self, value):
+        """Validate image file."""
+        if value:
+            # Check file size (5MB limit)
+            if value.size > 5 * 1024 * 1024:
+                logger.exception(
+                    "Image file too large: %s (size: %d bytes)", value.name, value.size
+                )
+                raise serializers.ValidationError("Image file too large (max 5MB)")
+
+            # Check file extension
+            allowed_extensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+            ext = os.path.splitext(value.name)[1].lower()
+            if ext not in allowed_extensions:
+                logger.exception("Invalid file extension: %s", ext)
+                raise serializers.ValidationError(
+                    f"File type not allowed. Allowed types: {', '.join(allowed_extensions)}"
+                )
+
+            # Check dimensions
+            try:
+                width, height = get_image_dimensions(value)
+                if width > 3000 or height > 3000:
+                    logger.exception("Image dimensions too large: %dx%d", width, height)
+                    raise serializers.ValidationError(
+                        "Image dimensions too large (max 3000x3000)"
+                    )
+            except Exception as e:
+                logger.error(
+                    "Error validating image dimensions for %s: %s", value.name, e
+                )
+                raise serializers.ValidationError("Invalid image file") from e
+
+        return value
+
+
+class ProductImageCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating product images."""
+
+    class Meta:
+        model = ProductImage
+        fields = ["image", "alt_text", "is_primary", "order"]
+
+    def validate_image(self, value):
+        return ProductImageSerializer().validate_image(value)
+
+
+class ProductImageUploadSerializer(serializers.Serializer):
+    """Serializer for uploading multiple images at once."""
+
+    images = serializers.ListField(
+        child=serializers.ImageField(),
+        max_length=10,
+        allow_empty=False,
+    )
+    alt_texts = serializers.ListField(
+        child=serializers.CharField(max_length=255, required=False),
+        required=False,
+        allow_empty=True,
+    )
+
+    def validate_images(self, value):
+        """Validate each image in the list."""
+        for image in value:
+            ProductImageSerializer().validate_image(image)
+        return value
+
+
 class ProductSerializer(serializers.ModelSerializer):
     """Serializer for Product model."""
+
+    main_image = serializers.SerializerMethodField()
+    images = ProductImageSerializer(many=True, read_only=True)
+    images_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -39,14 +191,39 @@ class ProductSerializer(serializers.ModelSerializer):
             "name",
             "sku",
             "ean",
+            "description",
             "unit",
-            "is_active",
             "min_stock",
             "max_stock",
+            "main_image",
+            "images",
+            "images_count",
+            "is_active",
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "created_at",
+            "updated_at",
+            "main_image",
+            "images",
+            "images_count",
+        ]
+
+    def get_main_image(self, obj):
+        """Get primary image URL."""
+        primary_image = obj.images.filter(is_primary=True).first()
+        if primary_image:
+            request = self.context.get("request")
+            if request:
+                return request.build_absolute_uri(primary_image.image.url)
+            return primary_image.image.url
+        return None
+
+    def get_images_count(self, obj):
+        """Get count of images."""
+        return obj.images.count()
 
 
 class StockSerializer(serializers.ModelSerializer):
