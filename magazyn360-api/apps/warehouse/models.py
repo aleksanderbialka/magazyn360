@@ -190,6 +190,14 @@ class WarehouseDocument(models.Model):
 
     fiscal_year = models.PositiveIntegerField()  # simple key for numbering
 
+    posted_by = models.ForeignKey(
+        "core.CustomUser",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="posted_documents",
+    )
+
     class Meta:
         constraints = [
             # numbering e.g. unique within company, type and year
