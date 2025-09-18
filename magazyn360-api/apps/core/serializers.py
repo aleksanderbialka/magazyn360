@@ -72,7 +72,7 @@ class CompanySerializer(serializers.ModelSerializer):
             "website",
             "owner",
         ]
-        read_only_fields = ["id", "owner"]
+        read_only_fields = ["id"]
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -88,4 +88,4 @@ class AddressSerializer(serializers.ModelSerializer):
             "postal_code",
             "country",
         ]
-        read_only_fields = ["id", "company"]
+        read_only_fields = ["id"]

@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import Address, Company, CustomUser
 
+
 logger = logging.getLogger(__name__)
 
 

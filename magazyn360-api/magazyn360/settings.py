@@ -3,10 +3,12 @@ Django settings for magazyn360 project.
 """
 
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
 import environ
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -35,15 +37,19 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_filters",
+    "corsheaders",
 ]
 
 
 # Custom apps
 INSTALLED_APPS += [
     "apps.core.apps.CoreConfig",
+    "apps.warehouse.apps.WarehouseConfig",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -53,6 +59,30 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
+
+CORS_ALLOWED_ORIGINS = env.list(
+    "CORS_ALLOWED_ORIGINS",
+    default=[
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
+        "https://magazyn360.pl",
+        "https://www.magazyn360.pl",
+    ],
+)
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS",
+    default=[
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
+        "https://magazyn360.pl",
+        "https://www.magazyn360.pl",
+    ],
+)
+
+CSRF_EXEMPT_URLS = ["/api/", "/swagger/", "/redoc/"]
 
 ROOT_URLCONF = "magazyn360.urls"
 
@@ -140,16 +170,60 @@ INSTALLED_APPS += [
     "drf_yasg",
 ]
 
+if DEBUG:
+    swagger_api_url = "http://localhost:8000"
+else:
+    swagger_api_url = "https://magazyn360.pl"
+
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
         "Bearer": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header",
-            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer <your_token_here>'",
+            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer <your_token_here>'",  # noqa: E501
         }
     },
     "USE_SESSION_AUTH": False,
+    "USE_HTTPS": not DEBUG,
+    "DEFAULT_API_URL": swagger_api_url,
+    "DOC_EXPANSION": "none",
+    "SHOW_REQUEST_HEADERS": True,
+    "PERSIST_AUTH": True,
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
 }
 
 # Internationalization

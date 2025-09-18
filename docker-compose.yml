@@ -10,7 +10,7 @@ volumes:
 
 services:
   magazyn360:
-    image: magazyn360:24.05.2025
+    image: magazyn360:15.06.2025
     container_name: magazyn360
     restart: always
     networks:

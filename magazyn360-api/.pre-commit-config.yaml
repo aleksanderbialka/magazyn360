@@ -1,14 +1,25 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.0
+    rev: v0.12.2
     hooks:
-      - id: ruff
-        args: [--fix]
+      # Run the linter.
+      - id: ruff-check
+        args: [ --fix, --show-fixes]
+      # Run the formatter.
+      - id: ruff-format
 
-  - repo: https://github.com/psf/black
-    rev: 24.3.0
-    hooks:
-      - id: black
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: 'v1.16.1'
+  #   hooks:
+  #   -   id: mypy
+  #       args: [--strict, --ignore-missing-imports, --install-types, --non-interactive]
+  #       exclude: magazyn360-api/helm-chart/
+
+  # - repo: https://github.com/jendrikseipp/vulture
+  #   rev: 'v2.3'
+  #   hooks:
+  #     - id: vulture
+  #       args: [magazyn360-api/]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -20,3 +31,6 @@ repos:
         exclude: magazyn360-api/helm-chart/
       - id: check-added-large-files
       - id: check-merge-conflict
+
+default_language_version:
+  python: python3.13

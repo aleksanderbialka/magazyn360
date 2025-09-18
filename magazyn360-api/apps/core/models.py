@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from . import validators
 from .enums import AddressTypes, Countries, Role
 
+
 logger = logging.getLogger(__name__)
 
 

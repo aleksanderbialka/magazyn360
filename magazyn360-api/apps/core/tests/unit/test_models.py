@@ -34,7 +34,7 @@ class TestCustomUser:
         assert user.groups.first().name == "Worker"
 
     @pytest.mark.parametrize(
-        "role,expected_group",
+        ("role", "expected_group"),
         [
             (Role.ADMIN, "Admin"),
             (Role.MANAGER, "Manager"),
