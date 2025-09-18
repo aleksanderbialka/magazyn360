@@ -1,3 +1,5 @@
+import logging
+import os
 import uuid
 from decimal import Decimal
 
@@ -6,6 +8,16 @@ from django.db.models import F, Q
 from django.utils.translation import gettext_lazy as _
 
 from .enums import DocStatus, DocType, Unit
+
+
+logger = logging.getLogger(__name__)
+
+
+def product_image_path(instance, filename):
+    """Generate upload path for product images."""
+    ext = os.path.splitext(filename)[1]
+    filename = f"{instance.product.sku or 'product'}_{instance.order}{ext}"
+    return f"products/{instance.product.company_id}/{instance.product.id}/{filename}"
 
 
 class Warehouse(models.Model):
@@ -70,6 +82,9 @@ class Product(models.Model):
         max_length=13, blank=True, default="", db_index=True
     )
     unit = models.CharField(max_length=16, choices=Unit.choices, default=Unit.PCS)
+    description = models.TextField(
+        blank=True, default="", max_length=2000, help_text="Product description"
+    )
     is_active: models.BooleanField = models.BooleanField(default=True)
     min_stock: models.DecimalField = models.DecimalField(
         max_digits=12, decimal_places=2, default=Decimal("0.00")
@@ -101,6 +116,65 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} [{self.sku}]"
+
+
+class ProductImage(models.Model):
+    """Model for storing multiple product images."""
+
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="images"
+    )
+    image = models.ImageField(upload_to=product_image_path)
+    alt_text = models.CharField(max_length=255, blank=True)
+    is_primary = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
+        unique_together = ["product", "order"]
+
+    def __str__(self):
+        return f"{self.product.name} - Image {self.order}"
+
+    def save(self, *args, **kwargs):
+        """Auto-set order and handle primary image logic."""
+        if not self.order and self.order != 0:
+            max_order = ProductImage.objects.filter(product=self.product).aggregate(
+                models.Max("order")
+            )["order__max"]
+            self.order = (max_order or 0) + 1
+
+        if not ProductImage.objects.filter(product=self.product).exists():
+            self.is_primary = True
+
+        if self.is_primary:
+            ProductImage.objects.filter(product=self.product).exclude(
+                id=self.id
+            ).update(is_primary=False)
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        """Delete image file when deleting model instance."""
+        if self.image:
+            try:
+                os.remove(self.image.path)
+            except (OSError, ValueError):
+                logger.warning("Failed to delete image file: %s", self.image.path)
+
+        if self.is_primary:
+            next_primary = (
+                ProductImage.objects.filter(product=self.product)
+                .exclude(id=self.id)
+                .first()
+            )
+
+            if next_primary:
+                next_primary.is_primary = True
+                next_primary.save()
+
+        super().delete(*args, **kwargs)
 
 
 class Stock(models.Model):

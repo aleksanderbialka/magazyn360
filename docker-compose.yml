@@ -7,16 +7,19 @@ networks:
 volumes:
   pgdata:
     name: magazyn360-pgdata
+  media_files:
+    name: magazyn360-media-files
 
 services:
   magazyn360:
-    image: magazyn360:15.06.2025
+    image: magazyn360:18.09.2025
     container_name: magazyn360
     restart: always
     networks:
       - magazyn360-net
     volumes:
-       - ./magazyn360-api:/var/www/magazyn360/app/magazyn360-api
+      - ./magazyn360-api:/var/www/magazyn360/app/magazyn360-api
+      - media_files:/var/www/magazyn360/app/magazyn360-api/media
     env_file:
       - ./magazyn360-api/.env
     ports:

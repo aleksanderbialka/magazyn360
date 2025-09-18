@@ -30,6 +30,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --force-
 COPY ./docs/supervisord/*.conf /etc/supervisor/conf.d/
 
 RUN mkdir -p /var/www/magazyn360/app/magazyn360-api/
+RUN mkdir -p /var/www/magazyn360/app/magazyn360-api/media/products
+RUN chmod 755 /var/www/magazyn360/app/magazyn360-api/media
+RUN chmod 755 /var/www/magazyn360/app/magazyn360-api/media/products
+
 RUN python3 -m venv /var/www/magazyn360/app/magazyn360_env/
 
 COPY ./pyproject.toml /var/www/magazyn360/app/magazyn360-api/
