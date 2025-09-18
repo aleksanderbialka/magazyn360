@@ -1,13 +1,10 @@
-from decimal import Decimal
-
-from django.db.models import F, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 
-from .enums import DocStatus, DocType
+from .enums import DocStatus
 from .models import (
     Product,
     Stock,
@@ -24,6 +21,8 @@ from .serializers import (
     WarehouseDocumentSerializer,
     WarehouseSerializer,
 )
+from .services.document_service import DocumentService
+from .services.stock_service import StockService
 
 
 class WarehouseViewSet(viewsets.ModelViewSet):
@@ -72,10 +71,8 @@ class StockViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"])
     def low_stock(self, request):
         """Get products with stock below minimum level."""
-        low_stock_items = Stock.objects.filter(
-            Q(quantity__lt=F("product__min_stock")) & Q(product__min_stock__gt=0)
-        ).select_related("warehouse", "product")
-
+        company_id = request.query_params.get("company")
+        low_stock_items = StockService.get_low_stock_items(company_id)
         serializer = self.get_serializer(low_stock_items, many=True)
         return Response(serializer.data)
 
@@ -84,29 +81,20 @@ class StockViewSet(viewsets.ModelViewSet):
         """Manual stock adjustment."""
         serializer = StockMovementSerializer(data=request.data)
         if serializer.is_valid():
-            warehouse_id = serializer.validated_data["warehouse"]
-            product_id = serializer.validated_data["product"]
-            quantity = serializer.validated_data["quantity"]
-
             try:
-                warehouse = Warehouse.objects.get(id=warehouse_id)
-                product = Product.objects.get(id=product_id)
+                warehouse = Warehouse.objects.get(
+                    id=serializer.validated_data["warehouse"]
+                )
+                product = Product.objects.get(id=serializer.validated_data["product"])
+                quantity = serializer.validated_data["quantity"]
+                reason = serializer.validated_data.get("reason", "Manual adjustment")
 
-                stock, created = Stock.objects.get_or_create(
+                stock = StockService.adjust_stock(
                     warehouse=warehouse,
                     product=product,
-                    defaults={"quantity": Decimal("0")},
+                    quantity_change=quantity,
+                    reason=reason,
                 )
-
-                new_quantity = stock.quantity + quantity
-                if new_quantity < 0:
-                    return Response(
-                        {"error": "Insufficient stock for this adjustment"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-
-                stock.quantity = new_quantity
-                stock.save()
 
                 response_serializer = StockSerializer(stock)
                 return Response(response_serializer.data)
@@ -116,6 +104,8 @@ class StockViewSet(viewsets.ModelViewSet):
                     {"error": "Warehouse or Product not found"},
                     status=status.HTTP_404_NOT_FOUND,
                 )
+            except ValueError as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -148,7 +138,7 @@ class WarehouseDocumentViewSet(viewsets.ModelViewSet):
             )
 
         try:
-            document.post_document()
+            DocumentService.post_document(document, posted_by=request.user)
             serializer = self.get_serializer(document)
             return Response(serializer.data)
         except ValueError as e:
@@ -158,21 +148,7 @@ class WarehouseDocumentViewSet(viewsets.ModelViewSet):
     def summary(self, request):
         """Get summary statistics for documents."""
         company_id = request.query_params.get("company")
-        queryset = self.get_queryset()
-
-        if company_id:
-            queryset = queryset.filter(company_id=company_id)
-
-        summary = {
-            "total_documents": queryset.count(),
-            "draft_documents": queryset.filter(status=DocStatus.DRAFT).count(),
-            "posted_documents": queryset.filter(status=DocStatus.POSTED).count(),
-            "by_type": {},
-        }
-
-        for doc_type, _ in DocType.choices:
-            summary["by_type"][doc_type] = queryset.filter(doc_type=doc_type).count()
-
+        summary = DocumentService.get_document_summary(company_id)
         return Response(summary)
 
 
