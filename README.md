@@ -4,6 +4,7 @@
 Magazyn360 is a modern SaaS ERP system designed to support the management of small and medium-sized enterprises. The project features full automation of deployment processes using CI/CD, application containerization with Docker, and orchestration with Kubernetes (K8s).
 
 [![CI](https://github.com/aleksanderbialka/magazyn360/actions/workflows/main_magazyn360.yml/badge.svg)](https://github.com/aleksanderbialka/magazyn360)
+[![CI](https://github.com/aleksanderbialka/bioscopeai-core/actions/workflows/main_bioscopeai_core.yml/badge.svg)](https://github.com/aleksanderbialka/bioscopeai-core)
 
 ---
 
